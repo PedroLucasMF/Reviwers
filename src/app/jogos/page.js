@@ -1,12 +1,13 @@
 "use client";
 
-import { Card, Col, Container, Row } from "react-bootstrap";
-import Pagina from "./components/Pagina";
+import { Card, Col, Row } from "react-bootstrap";
+import Pagina from "../components/Pagina";
+
 
 export default function Page() {
   return (
     <Pagina>
-      <div>
+        <div>
         <h1>Mais Recentes</h1>
         <Row md={1}>
           <Col>
@@ -24,8 +25,8 @@ export default function Page() {
             </div>
           </Col>
         </Row>
-      </div>
-      <div>
+        </div>
+        <div>
         <h1>Maiores Notas</h1>
         <Row md={1}>
           <Col>
@@ -43,8 +44,8 @@ export default function Page() {
             </div>
           </Col>
         </Row>
-      </div>
-      <div>
+        </div>
+        <div>
         <h1>Favoritos do Usuario</h1>
         <Row md={1}>
           <Col>
@@ -62,7 +63,7 @@ export default function Page() {
             </div>
           </Col>
         </Row>
-      </div>
+        </div>
     </Pagina>
   );
 }
