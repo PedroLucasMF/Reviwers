@@ -3,42 +3,59 @@
 import { Button, Card, Col, Row } from "react-bootstrap";
 import Pagina from "../components/Pagina";
 import Link from "next/link";
+import { NodeNextRequest } from "next/dist/server/base-http/node";
 
 export default function Page() {
-  const filmes = JSON.parse(localStorage.getItem('filmes')) || [];
+  const filmes = JSON.parse(localStorage.getItem("filmes")) || [];
 
   const buttonStyle = {
-    position: 'fixed',
-    bottom: '20px',
-    right: '20px',
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
     zIndex: 1000,
-    backgroundColor: '#007bff',
-    color: 'white',
-    borderRadius: '50%',
-    width: '50px',
-    height: '50px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '24px',
-    border: 'none',
+    backgroundColor: "#007bff",
+    color: "white",
+    borderRadius: "50%",
+    width: "50px",
+    height: "50px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "24px",
+    border: "none",
+  };
+
+  const buttonDet = {
+    backgroundColor: "#5D3FD3",
+    color: "white",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "24px",
+    border: "none",
   };
 
   const hoverStyle = {
-    backgroundColor: '#0056b3',
+    backgroundColor: "#0056b3",
   };
 
+
+  console.log(filmes);
   return (
     <Pagina>
-      <Button 
-        href="filmes/create" 
-        style={buttonStyle} 
-        onMouseEnter={(e) => e.target.style.backgroundColor = hoverStyle.backgroundColor}
-        onMouseLeave={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
+      <Button
+        href="filmes/create"
+        style={buttonStyle}
+        onMouseEnter={(e) =>
+          (e.target.style.backgroundColor = hoverStyle.backgroundColor)
+        }
+        onMouseLeave={(e) =>
+          (e.target.style.backgroundColor = buttonStyle.backgroundColor)
+        }
       >
         +
       </Button>
-      
+
       <div>
         <h1>Mais Recentes</h1>
         <Row md={1}>
@@ -51,22 +68,34 @@ export default function Page() {
                 padding: "1rem 0",
               }}
             >
-              <Row style={{ display: 'inline-flex' }}>
+              <Row style={{ display: "inline-flex" }}>
                 {filmes.map((item, index) => (
-                  <Col key={index} style={{ display: 'inline-block', marginRight: '1rem' }}>
-                    <Link href={`filmes/${item.id}`}>
-                      <Card style={{ width: "10rem" }}>
-                        <Card.Img
-                          variant="cover"
-                          src={item.capa}
-                        />
-                        <Card.Body>
-                          <Card.Title style={{ wordWrap: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal' }}>
-                            {item.nome}
-                          </Card.Title>
-                        </Card.Body>
-                      </Card>
-                    </Link>
+                  <Col
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "1rem" }}
+                  >
+                    <Card style={{ width: "10rem" }}>
+                      <Card.Img variant="cover" src={item.capa} />
+                      <Card.Body>
+                        <Card.Title
+                          style={{
+                            wordWrap: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "normal",
+                          }}
+                        >
+                          {item.nome}
+                        </Card.Title>
+                        <Button style={buttonDet}>
+                          <a
+                            href={`filmes/${item.id}`}
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            Detalhes
+                          </a>
+                        </Button>
+                      </Card.Body>
+                    </Card>
                   </Col>
                 ))}
               </Row>
@@ -87,10 +116,10 @@ export default function Page() {
                 padding: "1rem 0",
               }}
             >
-              <Row style={{ display: 'inline-flex' }}>
-                <Col style={{ display: 'inline-block', marginRight: '1rem' }}>
-                  
-                </Col>
+              <Row style={{ display: "inline-flex" }}>
+                <Col
+                  style={{ display: "inline-block", marginRight: "1rem" }}
+                ></Col>
               </Row>
             </div>
           </Col>
@@ -109,10 +138,10 @@ export default function Page() {
                 padding: "1rem 0",
               }}
             >
-              <Row style={{ display: 'inline-flex' }}>
-                <Col style={{ display: 'inline-block', marginRight: '1rem' }}>
-                  
-                </Col>
+              <Row style={{ display: "inline-flex" }}>
+                <Col
+                  style={{ display: "inline-block", marginRight: "1rem" }}
+                ></Col>
               </Row>
             </div>
           </Col>

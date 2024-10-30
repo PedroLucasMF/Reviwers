@@ -29,10 +29,11 @@ export default function Page() {
         onSubmit={(values, { resetForm }) => {
           // Salvando os valores no localStorage
           const filmesSalvos = JSON.parse(localStorage.getItem("filmes")) || [];
-          filmesSalvos.push(values);
+          const novoFilme = { id: Date.now(), ...values }; // Gera um ID único usando o timestamp
+          filmesSalvos.push(novoFilme);
           localStorage.setItem("filmes", JSON.stringify(filmesSalvos));
 
-          console.log("Formulário enviado e salvo no localStorage!", values);
+          console.log("Formulário enviado e salvo no localStorage!", novoFilme);
 
           // Reseta o formulário
           resetForm();
