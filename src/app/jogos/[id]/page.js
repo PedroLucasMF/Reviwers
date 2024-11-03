@@ -7,8 +7,8 @@ import { FaPencilAlt, FaStar } from "react-icons/fa";
 
 export default function Page({ params }) {
 
-  const filmes = JSON.parse(localStorage.getItem('filmes')) || []
-  const dados = filmes.find(item => item.id == params.id)
+  const jogos = JSON.parse(localStorage.getItem('jogos')) || []
+  const dados = jogos.find(item => item.id == params.id)
 
   console.log(dados);
 
@@ -49,7 +49,7 @@ export default function Page({ params }) {
       <div style={styles.container}>
         <div style={styles.content}>
           <div style={styles.imageContainer}>
-            <img src={dados.capa} alt="Capa do Filme" style={styles.image} />
+            <img src={dados.capa} alt="Capa do Jogo" style={styles.image} />
           </div>
           <div style={styles.details}>
             <h2 style={styles.title}>{dados.nome}</h2>

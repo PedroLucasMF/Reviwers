@@ -22,18 +22,18 @@ export default function Page() {
 
   return (
     <Pagina>
-      <h1>Formulário de Filme</h1>
+      <h1>Formulário de Jogo</h1>
       <Formik
         initialValues={{ nome: "", capa: "", descricao: "", nota: "", diretor: "" }}
         validationSchema={validationSchema}
         onSubmit={(values, { resetForm }) => {
           // Salvando os valores no localStorage
-          const filmesSalvos = JSON.parse(localStorage.getItem("filmes")) || [];
-          const novoFilme = { id: Date.now(), ...values }; // Gera um ID único usando o timestamp
-          filmesSalvos.push(novoFilme);
-          localStorage.setItem("filmes", JSON.stringify(filmesSalvos));
+          const jogosSalvos = JSON.parse(localStorage.getItem("jogos")) || [];
+          const novoJogo = { id: Date.now(), ...values }; // Gera um ID único usando o timestamp
+          jogosSalvos.push(novoJogo);
+          localStorage.setItem("jogos", JSON.stringify(jogosSalvos));
 
-          console.log("Formulário enviado e salvo no localStorage!", novoFilme);
+          console.log("Formulário enviado e salvo no localStorage!", novoJogo);
 
           // Reseta o formulário
           resetForm();
