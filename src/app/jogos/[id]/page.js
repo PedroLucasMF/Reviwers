@@ -33,7 +33,7 @@ export default function Page({ params }) {
     <Pagina>
 
 <Button
-  href="filmes/create"
+  href="jogos/create"
   style={buttonStyle}
   onMouseEnter={(e) =>
     (e.target.style.backgroundColor = hoverStyle.backgroundColor)
