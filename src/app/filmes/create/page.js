@@ -24,7 +24,7 @@ export default function Page() {
     <Pagina>
       <h1>Formulário de Filme</h1>
       <Formik
-        initialValues={{ nome: "", capa: "", descricao: "", nota: "", diretor: "" }}
+        initialValues={{ nome: "", capa: "", descricao: "", nota: "", comentario: "" }}
         validationSchema={validationSchema}
         onSubmit={(values, { resetForm }) => {
           // Salvando os valores no localStorage
