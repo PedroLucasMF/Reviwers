@@ -6,9 +6,8 @@ export default function Pagina(props) {
     <>
     <Navbar bg="dark" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="#home">Reviwers</Navbar.Brand>
+          <Navbar.Brand href="/">Reviwers</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link href="/">Home</Nav.Link>
             <Nav.Link href="/filmes">Filmes</Nav.Link>
             <Nav.Link href="/animes">Animes</Nav.Link>
             <Nav.Link href="/series">Series</Nav.Link>

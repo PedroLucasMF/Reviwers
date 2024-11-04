@@ -2,13 +2,35 @@
 
 import Pagina from "@/app/components/Pagina";
 import { Button } from "react-bootstrap";
-import { FaPencilAlt, FaStar } from "react-icons/fa";
-
+import { FaPencilAlt, FaStar, FaHeart } from "react-icons/fa";
+import { useEffect } from "react";
 
 export default function Page({ params }) {
+  const hqs = JSON.parse(localStorage.getItem("hqs")) || [];
+  const animes = JSON.parse(localStorage.getItem("animes")) || [];
+  const series = JSON.parse(localStorage.getItem("series")) || [];
+  const filmes = JSON.parse(localStorage.getItem("filmes")) || [];
+  const jogos = JSON.parse(localStorage.getItem("jogos")) || [];
 
-  const jogos = JSON.parse(localStorage.getItem('jogos')) || []
-  const dados = jogos.find(item => item.id == params.id)
+  // Encontrar o item em qualquer um dos local storages
+  const dados =
+    hqs.find((item) => item.id == params.id) ||
+    animes.find((item) => item.id == params.id) ||
+    series.find((item) => item.id == params.id) ||
+    filmes.find((item) => item.id == params.id) ||
+    jogos.find((item) => item.id == params.id);
+
+  // Determinar a categoria com base na origem do item
+  const categoria =
+    hqs.find((item) => item.id == params.id)
+      ? "hqs"
+      : animes.find((item) => item.id == params.id)
+      ? "animes"
+      : series.find((item) => item.id == params.id)
+      ? "series"
+      : filmes.find((item) => item.id == params.id)
+      ? "filmes"
+      : "jogos";
 
   console.log(dados);
 
@@ -29,27 +51,40 @@ export default function Page({ params }) {
     border: "none",
   };
 
+  // Função para adicionar o item aos favoritos no Local Storage
+  const addToFavorites = () => {
+    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+    // Verifica se o item já está nos favoritos para evitar duplicação
+    if (!favoritos.some((item) => item.id === dados.id && item.categoria === categoria)) {
+      const novoFavorito = { ...dados, categoria, link: `/${categoria}/${dados.id}` };
+      favoritos.push(novoFavorito);
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+      alert("Adicionado aos favoritos!");
+    } else {
+      alert("Este item já está nos favoritos.");
+    }
+  };
+
   return (
     <Pagina>
-
-<Button
-  href="jogos/create"
-  style={buttonStyle}
-  onMouseEnter={(e) =>
-    (e.target.style.backgroundColor = hoverStyle.backgroundColor)
-  }
-  onMouseLeave={(e) =>
-    (e.target.style.backgroundColor = buttonStyle.backgroundColor)
-  }
->
-  <FaPencilAlt />
-</Button>
-
+      <Button
+        href="jogos/create"
+        style={buttonStyle}
+        onMouseEnter={(e) =>
+          (e.target.style.backgroundColor = hoverStyle.backgroundColor)
+        }
+        onMouseLeave={(e) =>
+          (e.target.style.backgroundColor = buttonStyle.backgroundColor)
+        }
+      >
+        <FaPencilAlt />
+      </Button>
 
       <div style={styles.container}>
         <div style={styles.content}>
           <div style={styles.imageContainer}>
-            <img src={dados.capa} alt="Capa do Jogo" style={styles.image} />
+            <img src={dados.capa} alt="Capa do Anime" style={styles.image} />
           </div>
           <div style={styles.details}>
             <h2 style={styles.title}>{dados.nome}</h2>
@@ -64,6 +99,10 @@ export default function Page({ params }) {
                 />
               ))}
             </div>
+            {/* Botão de adicionar aos favoritos */}
+            <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
+              <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
+            </Button>
           </div>
         </div>
       </div>

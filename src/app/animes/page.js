@@ -4,7 +4,7 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import Pagina from "../components/Pagina";
 
 export default function Page() {
-  const series = JSON.parse(localStorage.getItem("series")) || [];
+  const animes = JSON.parse(localStorage.getItem("animes")) || [];
 
   const buttonStyle = {
     position: "fixed",
@@ -74,12 +74,12 @@ export default function Page() {
     marginTop: "10px",
   };
 
-  console.log(series);
+  console.log(animes);
 
   return (
     <Pagina style={pageStyle}>
       <Button
-        href="series/create"
+        href="animes/create"
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.target.style.backgroundColor = hoverStyle.backgroundColor)
@@ -103,7 +103,7 @@ export default function Page() {
               }}
             >
               <Row style={{ display: "inline-flex" }}>
-                {series.map((item, index) => (
+                {animes.map((item, index) => (
                   <Col
                     key={index}
                     style={{ display: "inline-block", marginRight: "1rem" }}
@@ -114,7 +114,7 @@ export default function Page() {
                         <Card.Title style={cardTitleStyle}>{item.nome}</Card.Title>
                         <Button style={buttonDet}>
                           <a
-                            href={`series/${item.id}`}
+                            href={`animes/${item.id}`}
                             style={{ textDecoration: "none", color: "white" }}
                           >
                             Detalhes

@@ -22,18 +22,18 @@ export default function Page() {
 
   return (
     <Pagina>
-      <h1>Formulário de Serie</h1>
+      <h1>Formulário de HQs</h1>
       <Formik
-        initialValues={{ nome: "", capa: "", descricao: "", nota: "", comentario: "" , episodios: []}}
+        initialValues={{ nome: "", capa: "", descricao: "", nota: "", comentario: "" , capitulos: []}}
         validationSchema={validationSchema}
         onSubmit={(values, { resetForm }) => {
           // Salvando os valores no localStorage
-          const seriesSalvas = JSON.parse(localStorage.getItem("series")) || [];
-          const novaSerie = { id: Date.now(), ...values }; // Gera um ID único usando o timestamp
-          seriesSalvas.push(novaSerie);
-          localStorage.setItem("series", JSON.stringify(seriesSalvas));
+          const hqsSalvos = JSON.parse(localStorage.getItem("hqs")) || [];
+          const novoHqs = { id: Date.now(), ...values }; // Gera um ID único usando o timestamp
+          hqsSalvos.push(novoHqs);
+          localStorage.setItem("hqs", JSON.stringify(hqsSalvos));
 
-          console.log("Formulário enviado e salvo no localStorage!", novaSerie);
+          console.log("Formulário enviado e salvo no localStorage!", novoHqs);
 
           // Reseta o formulário
           resetForm();

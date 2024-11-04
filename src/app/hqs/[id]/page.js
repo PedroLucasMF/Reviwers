@@ -69,7 +69,7 @@ export default function Page({ params }) {
   return (
     <Pagina>
       <Button
-        href="series/create"
+        href="hqs/create"
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.target.style.backgroundColor = hoverStyle.backgroundColor)
@@ -84,7 +84,7 @@ export default function Page({ params }) {
       <div style={styles.container}>
         <div style={styles.content}>
           <div style={styles.imageContainer}>
-            <img src={dados.capa} alt="Capa da Serie" style={styles.image} />
+            <img src={dados.capa} alt="Capa do Anime" style={styles.image} />
           </div>
           <div style={styles.details}>
             <h2 style={styles.title}>{dados.nome}</h2>
