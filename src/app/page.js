@@ -127,7 +127,7 @@ export default function Page() {
                         <Card.Title style={cardTitleStyle}>{item.nome}</Card.Title>
                         <Button style={buttonDet}>
                           <a
-                            href={`/${item.tipo}/${item.id}`}
+                            href={`/${item.link}/${item.id}`}
                             style={{ textDecoration: "none", color: "white" }}
                           >
                             Detalhes

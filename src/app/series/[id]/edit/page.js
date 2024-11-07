@@ -65,48 +65,10 @@ export default function Page({ params }) {
   };
 
   console.log(categoria);
-  console.log(dados);
 
   return (
     <Pagina>
-      <Button
-        href="{`edit/${item.id}`}"
-        style={buttonStyle}
-        onMouseEnter={(e) =>
-          (e.target.style.backgroundColor = hoverStyle.backgroundColor)
-        }
-        onMouseLeave={(e) =>
-          (e.target.style.backgroundColor = buttonStyle.backgroundColor)
-        }
-      >
-        <FaPencilAlt />
-      </Button>
-
-      <div style={styles.container}>
-        <div style={styles.content}>
-          <div style={styles.imageContainer}>
-            <img src={dados.capa} alt="Capa da Serie" style={styles.image} />
-          </div>
-          <div style={styles.details}>
-            <h2 style={styles.title}>{dados.nome}</h2>
-            <p>{dados.descricao}</p>
-            <p>{dados.comentario}</p>
-            <div style={styles.rating}>
-              {[...Array(5)].map((_, index) => (
-                <FaStar
-                  key={index}
-                  color={index < dados.nota ? "#ffc107" : "#e4e5e9"}
-                  size={24}
-                />
-              ))}
-            </div>
-            {/* Botão de adicionar aos favoritos */}
-            <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
-              <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
-            </Button>
-          </div>
-        </div>
-      </div>
+      <p>ahhhh</p>
     </Pagina>
   );
 }

@@ -2,10 +2,11 @@
 
 import Pagina from "@/app/components/Pagina";
 import { Button } from "react-bootstrap";
-import { FaPencilAlt, FaStar, FaHeart } from "react-icons/fa";
-import { useEffect } from "react";
+import { FaPencilAlt, FaStar, FaHeart, FaTrashAlt } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }) {
+  const router = useRouter();
   const hqs = JSON.parse(localStorage.getItem("hqs")) || [];
   const animes = JSON.parse(localStorage.getItem("animes")) || [];
   const series = JSON.parse(localStorage.getItem("series")) || [];
@@ -21,18 +22,35 @@ export default function Page({ params }) {
     jogos.find((item) => item.id == params.id);
 
   // Determinar a categoria com base na origem do item
-  const categoria =
-    hqs.find((item) => item.id == params.id)
-      ? "hqs"
-      : animes.find((item) => item.id == params.id)
-      ? "animes"
-      : series.find((item) => item.id == params.id)
-      ? "series"
-      : filmes.find((item) => item.id == params.id)
-      ? "filmes"
-      : "jogos";
+  const categoria = hqs.find((item) => item.id == params.id)
+    ? "hqs"
+    : animes.find((item) => item.id == params.id)
+    ? "animes"
+    : series.find((item) => item.id == params.id)
+    ? "series"
+    : filmes.find((item) => item.id == params.id)
+    ? "filmes"
+    : "jogos";
 
-  console.log(dados);
+  function excluir() {
+    if (confirm("Deseja realmente excluir o registro?")) {
+      // Remove o item do localStorage da categoria específica
+      const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
+        (item) => item.id != params.id
+      );
+      localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
+
+      // Remove o item dos favoritos, se presente
+      const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+      const favoritosAtualizados = favoritos.filter(
+        (item) => !(item.id === params.id && item.categoria === categoria)
+      );
+      localStorage.setItem("favoritos", JSON.stringify(favoritosAtualizados));
+
+      alert("Registro excluído com sucesso!");
+      router.back(); // Redireciona para a página anterior ou inicial
+    }
+  }
 
   const buttonStyle = {
     position: "fixed",
@@ -53,11 +71,19 @@ export default function Page({ params }) {
 
   // Função para adicionar o item aos favoritos no Local Storage
   const addToFavorites = () => {
-    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
 
     // Verifica se o item já está nos favoritos para evitar duplicação
-    if (!favoritos.some((item) => item.id === dados.id && item.categoria === categoria)) {
-      const novoFavorito = { ...dados, categoria, link: `/${categoria}/${dados.id}` };
+    if (
+      !favoritos.some(
+        (item) => item.id === dados.id && item.categoria === categoria
+      )
+    ) {
+      const novoFavorito = {
+        ...dados,
+        categoria,
+        link: `${categoria}`,
+      };
       favoritos.push(novoFavorito);
       localStorage.setItem("favoritos", JSON.stringify(favoritos));
       alert("Adicionado aos favoritos!");
@@ -66,10 +92,11 @@ export default function Page({ params }) {
     }
   };
 
+  console.log(categoria);
+
   return (
     <Pagina>
       <Button
-        href="filmes/create"
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.target.style.backgroundColor = hoverStyle.backgroundColor)
@@ -77,8 +104,8 @@ export default function Page({ params }) {
         onMouseLeave={(e) =>
           (e.target.style.backgroundColor = buttonStyle.backgroundColor)
         }
-      >
-        <FaPencilAlt />
+      ><a href="{`edit/${item.id}`}">
+        <FaPencilAlt /></a>
       </Button>
 
       <div style={styles.container}>
@@ -100,8 +127,16 @@ export default function Page({ params }) {
               ))}
             </div>
             {/* Botão de adicionar aos favoritos */}
-            <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
+            <Button
+              onClick={addToFavorites}
+              variant="danger"
+              style={{ marginTop: "10px" }}
+            >
               <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
+            </Button>
+
+            <Button onClick={excluir} variant="secondary" style={{ marginTop: "10px" }}>
+              <FaTrashAlt style={{ marginRight: "5px" }} /> Excluir
             </Button>
           </div>
         </div>
