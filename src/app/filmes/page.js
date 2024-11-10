@@ -127,44 +127,6 @@ export default function Page() {
           </Col>
         </Row>
       </div>
-
-      <div>
-        <h1 style={sectionHeaderStyle}>Maiores Notas</h1>
-        <Row md={1}>
-          <Col>
-            <div
-              style={{
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-                padding: "1rem 0",
-              }}
-            >
-              <Row style={{ display: "inline-flex" }}>
-                <Col style={{ display: "inline-block", marginRight: "1rem" }}></Col>
-              </Row>
-            </div>
-          </Col>
-        </Row>
-      </div>
-
-      <div>
-        <h1 style={sectionHeaderStyle}>Favoritos do Usuário</h1>
-        <Row md={1}>
-          <Col>
-            <div
-              style={{
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-                padding: "1rem 0",
-              }}
-            >
-              <Row style={{ display: "inline-flex" }}>
-                <Col style={{ display: "inline-block", marginRight: "1rem" }}></Col>
-              </Row>
-            </div>
-          </Col>
-        </Row>
-      </div>
     </Pagina>
   );
 }

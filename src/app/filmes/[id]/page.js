@@ -32,25 +32,30 @@ export default function Page({ params }) {
     ? "filmes"
     : "jogos";
 
-  function excluir() {
-    if (confirm("Deseja realmente excluir o registro?")) {
-      // Remove o item do localStorage da categoria específica
-      const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
-        (item) => item.id != params.id
-      );
-      localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
-
+    function excluirFavoritos() {
       // Remove o item dos favoritos, se presente
       const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
       const favoritosAtualizados = favoritos.filter(
         (item) => !(item.id === params.id && item.categoria === categoria)
       );
       localStorage.setItem("favoritos", JSON.stringify(favoritosAtualizados));
-
-      alert("Registro excluído com sucesso!");
-      router.back(); // Redireciona para a página anterior ou inicial
     }
-  }
+  
+    function excluir() {
+      if (confirm("Deseja realmente excluir o registro?")) {
+        // Remove o item do localStorage da categoria específica
+        const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
+          (item) => item.id != params.id
+        );
+        localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
+  
+        // Chama a função para excluir o item dos favoritos
+        excluirFavoritos();
+  
+        alert("Registro excluído com sucesso!");
+        router.back(); // Redireciona para a página anterior ou inicial
+      }
+    }
 
   const buttonStyle = {
     position: "fixed",

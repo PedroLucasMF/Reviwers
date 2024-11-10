@@ -5,6 +5,11 @@ import Pagina from "@/app/components/Pagina";
 
 export default function Page() {
   const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+  const series = JSON.parse(localStorage.getItem("series")) || [];
+  const animes = JSON.parse(localStorage.getItem("animes")) || [];
+  const jogos = JSON.parse(localStorage.getItem("jogos")) || [];
+  const hqs = JSON.parse(localStorage.getItem("hqs")) || [];
+  const filmes = JSON.parse(localStorage.getItem("filmes")) || [];
   console.log(favoritos);
 
   const pageStyle = {
@@ -52,10 +57,21 @@ export default function Page() {
     transition: "background-color 0.3s",
   };
 
+  // Função para encontrar a categoria correspondente ao item com base no ID
+  const getItemCategory = (id) => {
+    if (filmes.some(item => item.id === id)) return "filmes";
+    if (series.some(item => item.id === id)) return "series";
+    if (jogos.some(item => item.id === id)) return "jogos";
+    if (animes.some(item => item.id === id)) return "animes";
+    if (hqs.some(item => item.id === id)) return "hqs";
+    if (favoritos.some(item => item.id === id)) return "favoritos";
+    return "default-category";
+  };
+
   return (
     <Pagina style={pageStyle}>
       <div>
-        <h1 style={sectionHeaderStyle}>Mais Recentes</h1>
+        <h1 style={sectionHeaderStyle}>Filmes</h1>
         <Row md={1}>
           <Col>
             <div
@@ -65,22 +81,40 @@ export default function Page() {
                 padding: "1rem 0",
               }}
             >
-              <Card style={cardStyle}>
-                <Card.Img
-                  variant="cover"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7KHfGTX5y4tFHQ2lvPhmxaDXa4bloh-S8IQ&s"
-                />
-                <Card.Body>
-                  <Card.Title style={cardTitleStyle}>Card Title 1</Card.Title>
-                </Card.Body>
-              </Card>
+              <Row style={{ display: "inline-flex" }}>
+                {filmes.map((item, index) => (
+                  <Col
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "1rem" }}
+                  >
+                    <Card style={cardStyle}>
+                      <Card.Img variant="cover" src={item.capa} />
+                      <Card.Body>
+                        <Card.Title style={cardTitleStyle}>
+                          {item.nome}
+                        </Card.Title>
+                        <Button style={buttonDet}>
+                          <a
+                            href={`/${
+                              getItemCategory(item.id)
+                            }/${item.id}`}
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            Detalhes
+                          </a>
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
             </div>
           </Col>
         </Row>
       </div>
-      
+
       <div>
-        <h1 style={sectionHeaderStyle}>Maiores Notas</h1>
+        <h1 style={sectionHeaderStyle}>Séries</h1>
         <Row md={1}>
           <Col>
             <div
@@ -90,15 +124,162 @@ export default function Page() {
                 padding: "1rem 0",
               }}
             >
-              <Card style={cardStyle}>
-                <Card.Img
-                  variant="cover"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7KHfGTX5y4tFHQ2lvPhmxaDXa4bloh-S8IQ&s"
-                />
-                <Card.Body>
-                  <Card.Title style={cardTitleStyle}>Card Title 1</Card.Title>
-                </Card.Body>
-              </Card>
+              <Row style={{ display: "inline-flex" }}>
+                {series.map((item, index) => (
+                  <Col
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "1rem" }}
+                  >
+                    <Card style={cardStyle}>
+                      <Card.Img variant="cover" src={item.capa} />
+                      <Card.Body>
+                        <Card.Title style={cardTitleStyle}>
+                          {item.nome}
+                        </Card.Title>
+                        <Button style={buttonDet}>
+                          <a
+                            href={`/${
+                              getItemCategory(item.id)
+                            }/${item.id}`}
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            Detalhes
+                          </a>
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          </Col>
+        </Row>
+      </div>
+
+      <div>
+        <h1 style={sectionHeaderStyle}>Jogos</h1>
+        <Row md={1}>
+          <Col>
+            <div
+              style={{
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+                padding: "1rem 0",
+              }}
+            >
+              <Row style={{ display: "inline-flex" }}>
+                {jogos.map((item, index) => (
+                  <Col
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "1rem" }}
+                  >
+                    <Card style={cardStyle}>
+                      <Card.Img variant="cover" src={item.capa} />
+                      <Card.Body>
+                        <Card.Title style={cardTitleStyle}>
+                          {item.nome}
+                        </Card.Title>
+                        <Button style={buttonDet}>
+                          <a
+                            href={`/${
+                              getItemCategory(item.id)
+                            }/${item.id}`}
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            Detalhes
+                          </a>
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          </Col>
+        </Row>
+      </div>
+
+      <div>
+        <h1 style={sectionHeaderStyle}>Animes</h1>
+        <Row md={1}>
+          <Col>
+            <div
+              style={{
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+                padding: "1rem 0",
+              }}
+            >
+              <Row style={{ display: "inline-flex" }}>
+                {animes.map((item, index) => (
+                  <Col
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "1rem" }}
+                  >
+                    <Card style={cardStyle}>
+                      <Card.Img variant="cover" src={item.capa} />
+                      <Card.Body>
+                        <Card.Title style={cardTitleStyle}>
+                          {item.nome}
+                        </Card.Title>
+                        <Button style={buttonDet}>
+                          <a
+                            href={`/${
+                              getItemCategory(item.id)
+                            }/${item.id}`}
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            Detalhes
+                          </a>
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          </Col>
+        </Row>
+      </div>
+
+      <div>
+        <h1 style={sectionHeaderStyle}>HQs</h1>
+        <Row md={1}>
+          <Col>
+            <div
+              style={{
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+                padding: "1rem 0",
+              }}
+            >
+              <Row style={{ display: "inline-flex" }}>
+                {hqs.map((item, index) => (
+                  <Col
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "1rem" }}
+                  >
+                    <Card style={cardStyle}>
+                      <Card.Img variant="cover" src={item.capa} />
+                      <Card.Body>
+                        <Card.Title style={cardTitleStyle}>
+                          {item.nome}
+                        </Card.Title>
+                        <Button style={buttonDet}>
+                          <a
+                            href={`/${
+                              getItemCategory(item.id)
+                            }/${item.id}`}
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            Detalhes
+                          </a>
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
             </div>
           </Col>
         </Row>
@@ -124,10 +305,14 @@ export default function Page() {
                     <Card style={cardStyle}>
                       <Card.Img variant="cover" src={item.capa} />
                       <Card.Body>
-                        <Card.Title style={cardTitleStyle}>{item.nome}</Card.Title>
+                        <Card.Title style={cardTitleStyle}>
+                          {item.nome}
+                        </Card.Title>
                         <Button style={buttonDet}>
                           <a
-                            href={`/${item.link}/${item.id}`}
+                            href={`/${
+                              getItemCategory(item.id)
+                            }/${item.id}`}
                             style={{ textDecoration: "none", color: "white" }}
                           >
                             Detalhes

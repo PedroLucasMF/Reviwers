@@ -2,8 +2,9 @@
 
 import Pagina from "@/app/components/Pagina";
 import { Button } from "react-bootstrap";
-import { FaPencilAlt, FaStar, FaHeart } from "react-icons/fa";
-import { useEffect } from "react";
+import { FaPencilAlt, FaStar, FaHeart, FaTrashAlt } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+
 
 export default function Page({ params }) {
   const hqs = JSON.parse(localStorage.getItem("hqs")) || [];
@@ -66,6 +67,31 @@ export default function Page({ params }) {
     }
   };
 
+  function excluirFavoritos() {
+    // Remove o item dos favoritos, se presente
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    const favoritosAtualizados = favoritos.filter(
+      (item) => !(item.id === params.id && item.categoria === categoria)
+    );
+    localStorage.setItem("favoritos", JSON.stringify(favoritosAtualizados));
+  }
+
+  function excluir() {
+    if (confirm("Deseja realmente excluir o registro?")) {
+      // Remove o item do localStorage da categoria específica
+      const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
+        (item) => item.id != params.id
+      );
+      localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
+
+      // Chama a função para excluir o item dos favoritos
+      excluirFavoritos();
+
+      alert("Registro excluído com sucesso!");
+      router.back(); // Redireciona para a página anterior ou inicial
+    }
+  }
+
   return (
     <Pagina>
       <Button
@@ -102,6 +128,10 @@ export default function Page({ params }) {
             {/* Botão de adicionar aos favoritos */}
             <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
               <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
+            </Button>
+
+            <Button onClick={excluir} variant="secondary" style={{ marginTop: "10px" }}>
+              <FaTrashAlt style={{ marginRight: "5px" }} /> Excluir
             </Button>
           </div>
         </div>

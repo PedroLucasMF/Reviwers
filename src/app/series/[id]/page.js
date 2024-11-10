@@ -1,18 +1,20 @@
 "use client";
 
 import Pagina from "@/app/components/Pagina";
-import { Button } from "react-bootstrap";
-import { FaPencilAlt, FaStar, FaHeart } from "react-icons/fa";
-import { useEffect } from "react";
+import { Button, Accordion } from "react-bootstrap";
+import { FaPencilAlt, FaStar, FaHeart, FaChevronDown, FaTrashAlt } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Importa useRouter
 
 export default function Page({ params }) {
+  const router = useRouter(); // Inicializa useRouter
+
   const hqs = JSON.parse(localStorage.getItem("hqs")) || [];
   const animes = JSON.parse(localStorage.getItem("animes")) || [];
   const series = JSON.parse(localStorage.getItem("series")) || [];
   const filmes = JSON.parse(localStorage.getItem("filmes")) || [];
   const jogos = JSON.parse(localStorage.getItem("jogos")) || [];
 
-  // Encontrar o item em qualquer um dos local storages
   const dados =
     hqs.find((item) => item.id == params.id) ||
     animes.find((item) => item.id == params.id) ||
@@ -20,7 +22,6 @@ export default function Page({ params }) {
     filmes.find((item) => item.id == params.id) ||
     jogos.find((item) => item.id == params.id);
 
-  // Determinar a categoria com base na origem do item
   const categoria =
     hqs.find((item) => item.id == params.id)
       ? "hqs"
@@ -31,6 +32,10 @@ export default function Page({ params }) {
       : filmes.find((item) => item.id == params.id)
       ? "filmes"
       : "jogos";
+
+  const [episodiosVisiveis, setEpisodiosVisiveis] = useState(false);
+
+  const toggleEpisodios = () => setEpisodiosVisiveis(!episodiosVisiveis);
 
   const buttonStyle = {
     position: "fixed",
@@ -49,11 +54,13 @@ export default function Page({ params }) {
     border: "none",
   };
 
-  // Função para adicionar o item aos favoritos no Local Storage
+  const hoverStyle = {
+    backgroundColor: "#0056b3",
+  };
+
   const addToFavorites = () => {
     const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-    // Verifica se o item já está nos favoritos para evitar duplicação
     if (!favoritos.some((item) => item.id === dados.id && item.categoria === categoria)) {
       const novoFavorito = { ...dados, categoria, link: `/${categoria}/${dados.id}` };
       favoritos.push(novoFavorito);
@@ -64,13 +71,35 @@ export default function Page({ params }) {
     }
   };
 
-  console.log(categoria);
-  console.log(dados);
+  function excluirFavoritos() {
+    // Remove o item dos favoritos, se presente
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    const favoritosAtualizados = favoritos.filter(
+      (item) => !(item.id === params.id && item.categoria === categoria)
+    );
+    localStorage.setItem("favoritos", JSON.stringify(favoritosAtualizados));
+  }
+
+  function excluir() {
+    if (confirm("Deseja realmente excluir o registro?")) {
+      // Remove o item do localStorage da categoria específica
+      const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
+        (item) => item.id != params.id
+      );
+      localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
+
+      // Chama a função para excluir o item dos favoritos
+      excluirFavoritos();
+
+      alert("Registro excluído com sucesso!");
+      router.back(); // Redireciona para a página anterior ou inicial
+    }
+  }
 
   return (
     <Pagina>
       <Button
-        href="{`edit/${item.id}`}"
+        href={`/${categoria}/${dados.id}/edit`} 
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.target.style.backgroundColor = hoverStyle.backgroundColor)
@@ -85,7 +114,7 @@ export default function Page({ params }) {
       <div style={styles.container}>
         <div style={styles.content}>
           <div style={styles.imageContainer}>
-            <img src={dados.capa} alt="Capa da Serie" style={styles.image} />
+            <img src={dados.capa} alt="Capa" style={styles.image} />
           </div>
           <div style={styles.details}>
             <h2 style={styles.title}>{dados.nome}</h2>
@@ -100,10 +129,45 @@ export default function Page({ params }) {
                 />
               ))}
             </div>
-            {/* Botão de adicionar aos favoritos */}
             <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
               <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
             </Button>
+
+            <Button onClick={excluir} variant="secondary" style={{ marginTop: "10px" }}>
+              <FaTrashAlt style={{ marginRight: "5px" }} /> Excluir
+            </Button>
+
+            {/* Seção de episódios */}
+            {dados.episodios && dados.episodios.length > 0 && (
+              <div style={{ marginTop: "20px" }}>
+                <Button variant="secondary" onClick={toggleEpisodios}>
+                  Episódios <FaChevronDown />
+                </Button>
+                {episodiosVisiveis && (
+                  <div style={styles.episodeList}>
+                    {dados.episodios.map((episodio, index) => (
+                      <div key={index} style={styles.episodeItem}>
+                        <img src={episodio.capa} alt={`Capa do Episódio ${episodio.numero}`} style={styles.episodeImage} />
+                        <div style={styles.episodeContent}>
+                          <h4 style={styles.episodeTitle}>Episódio {episodio.numero}: {episodio.nome}</h4>
+                          <p style={styles.episodeDescription}>{episodio.descricao}</p>
+                          <p style={styles.episodeComment}>{episodio.comentario}</p>
+                          <div style={styles.episodeRating}>
+                            {[...Array(5)].map((_, i) => (
+                              <FaStar
+                                key={i}
+                                color={i < episodio.nota ? "#ffc107" : "#e4e5e9"}
+                                size={20}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -113,7 +177,7 @@ export default function Page({ params }) {
 
 const styles = {
   container: {
-    backgroundColor: "#899499", // fundo roxo claro
+    backgroundColor: "#899499",
     minHeight: "100vh",
     display: "flex",
     justifyContent: "center",
@@ -121,7 +185,7 @@ const styles = {
     padding: "20px",
   },
   content: {
-    backgroundColor: "#D3D3D3", // fundo branco para o conteúdo principal
+    backgroundColor: "#D3D3D3",
     borderRadius: "8px",
     display: "flex",
     maxWidth: "800px",
@@ -133,7 +197,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#D3D3D3", // continua no fundo roxo claro para a imagem
+    backgroundColor: "#D3D3D3",
     padding: "20px",
   },
   image: {
@@ -158,5 +222,49 @@ const styles = {
     display: "flex",
     gap: "5px",
     marginTop: "10px",
+  },
+  episodeList: {
+    marginTop: "10px",
+    backgroundColor: "#E0E0E0",
+    padding: "15px",
+    borderRadius: "8px",
+  },
+  episodeItem: {
+    display: "flex",
+    alignItems: "flex-start",
+    marginBottom: "10px",
+    padding: "10px",
+    backgroundColor: "#F5F5F5",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  episodeImage: {
+    width: "80px",
+    height: "auto",
+    borderRadius: "4px",
+    marginRight: "15px",
+  },
+  episodeContent: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  episodeTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    marginBottom: "5px",
+  },
+  episodeDescription: {
+    fontSize: "14px",
+    color: "#666",
+    marginBottom: "5px",
+  },
+  episodeComment: {
+    fontSize: "14px",
+    color: "#888",
+    marginBottom: "5px",
+  },
+  episodeRating: {
+    display: "flex",
+    gap: "5px",
   },
 };
