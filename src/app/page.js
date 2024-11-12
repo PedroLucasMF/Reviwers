@@ -10,7 +10,6 @@ export default function Page() {
   const jogos = JSON.parse(localStorage.getItem("jogos")) || [];
   const hqs = JSON.parse(localStorage.getItem("hqs")) || [];
   const filmes = JSON.parse(localStorage.getItem("filmes")) || [];
-  console.log(favoritos);
 
   const pageStyle = {
     backgroundColor: "#899499",
@@ -67,6 +66,9 @@ export default function Page() {
     if (favoritos.some(item => item.id === id)) return "favoritos";
     return "default-category";
   };
+
+  console.log(favoritos);
+  console.log(filmes);
 
   return (
     <Pagina style={pageStyle}>

@@ -4,9 +4,10 @@ import Pagina from "@/app/components/Pagina";
 import { Button } from "react-bootstrap";
 import { FaPencilAlt, FaStar, FaHeart, FaTrashAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-
+import { useState, useEffect } from "react";
 
 export default function Page({ params }) {
+  const router = useRouter();
   const hqs = JSON.parse(localStorage.getItem("hqs")) || [];
   const animes = JSON.parse(localStorage.getItem("animes")) || [];
   const series = JSON.parse(localStorage.getItem("series")) || [];
@@ -22,18 +23,78 @@ export default function Page({ params }) {
     jogos.find((item) => item.id == params.id);
 
   // Determinar a categoria com base na origem do item
-  const categoria =
-    hqs.find((item) => item.id == params.id)
-      ? "hqs"
-      : animes.find((item) => item.id == params.id)
-      ? "animes"
-      : series.find((item) => item.id == params.id)
-      ? "series"
-      : filmes.find((item) => item.id == params.id)
-      ? "filmes"
-      : "jogos";
+  const categoria = hqs.find((item) => item.id == params.id)
+    ? "hqs"
+    : animes.find((item) => item.id == params.id)
+    ? "animes"
+    : series.find((item) => item.id == params.id)
+    ? "series"
+    : filmes.find((item) => item.id == params.id)
+    ? "filmes"
+    : "jogos";
 
-  console.log(dados);
+  // Estado para verificar se o item está nos favoritos
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  useEffect(() => {
+    // Verifica se o item já está nos favoritos ao carregar a página
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    const itemFavorito = favoritos.some(
+      (item) => item.id === dados.id && item.categoria === categoria
+    );
+    setIsFavorited(itemFavorito);
+  }, [dados, categoria]);
+
+  // Função para adicionar o item aos favoritos no Local Storage
+  const addToFavorites = () => {
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+
+    // Verifica se o item já está nos favoritos para evitar duplicação
+    if (
+      !favoritos.some(
+        (item) => item.id === dados.id && item.categoria === categoria
+      )
+    ) {
+      const novoFavorito = {
+        ...dados,
+        categoria,
+        id: dados.id,
+        link: `${categoria}`,
+      };
+      favoritos.push(novoFavorito);
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+      setIsFavorited(true); // Atualiza o estado para refletir a mudança
+      alert("Adicionado aos favoritos!");
+    } else {
+      alert("Este item já está nos favoritos.");
+    }
+  };
+
+  // Função para remover o item dos favoritos
+  const removeFromFavorites = () => {
+    let favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    favoritos = favoritos.filter(
+      (item) => item.id !== dados.id || item.categoria !== categoria
+    );
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+    setIsFavorited(false); // Atualiza o estado para refletir a mudança
+    alert("Removido dos favoritos!");
+  };
+
+  function excluir() {
+    if (confirm("Deseja realmente excluir o registro?")) {
+      const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
+        (item) => item.id != params.id
+      );
+
+      localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
+
+      removeFromFavorites();
+
+      alert("Registro excluído com sucesso!");
+      router.back();
+    }
+  }
 
   const buttonStyle = {
     position: "fixed",
@@ -52,50 +113,9 @@ export default function Page({ params }) {
     border: "none",
   };
 
-  // Função para adicionar o item aos favoritos no Local Storage
-  const addToFavorites = () => {
-    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
-
-    // Verifica se o item já está nos favoritos para evitar duplicação
-    if (!favoritos.some((item) => item.id === dados.id && item.categoria === categoria)) {
-      const novoFavorito = { ...dados, categoria, link: `/${categoria}/${dados.id}` };
-      favoritos.push(novoFavorito);
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
-      alert("Adicionado aos favoritos!");
-    } else {
-      alert("Este item já está nos favoritos.");
-    }
-  };
-
-  function excluirFavoritos() {
-    // Remove o item dos favoritos, se presente
-    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
-    const favoritosAtualizados = favoritos.filter(
-      (item) => !(item.id === params.id && item.categoria === categoria)
-    );
-    localStorage.setItem("favoritos", JSON.stringify(favoritosAtualizados));
-  }
-
-  function excluir() {
-    if (confirm("Deseja realmente excluir o registro?")) {
-      // Remove o item do localStorage da categoria específica
-      const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
-        (item) => item.id != params.id
-      );
-      localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
-
-      // Chama a função para excluir o item dos favoritos
-      excluirFavoritos();
-
-      alert("Registro excluído com sucesso!");
-      router.back(); // Redireciona para a página anterior ou inicial
-    }
-  }
-
   return (
     <Pagina>
       <Button
-        href="jogos/create"
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.target.style.backgroundColor = hoverStyle.backgroundColor)
@@ -104,7 +124,9 @@ export default function Page({ params }) {
           (e.target.style.backgroundColor = buttonStyle.backgroundColor)
         }
       >
-        <FaPencilAlt />
+        <a href="{`edit/${item.id}`}">
+          <FaPencilAlt />
+        </a>
       </Button>
 
       <div style={styles.container}>
@@ -125,10 +147,25 @@ export default function Page({ params }) {
                 />
               ))}
             </div>
-            {/* Botão de adicionar aos favoritos */}
-            <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
-              <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
-            </Button>
+
+            {/* Renderiza o botão correto baseado no estado de favoritos */}
+            {!isFavorited ? (
+              <Button
+                onClick={addToFavorites}
+                variant="danger"
+                style={{ marginTop: "10px" }}
+              >
+                <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
+              </Button>
+            ) : (
+              <Button
+                onClick={removeFromFavorites}
+                variant="danger"
+                style={{ marginTop: "10px" }}
+              >
+                <FaHeart style={{ marginRight: "5px" }} /> Remover dos Favoritos
+              </Button>
+            )}
 
             <Button onClick={excluir} variant="secondary" style={{ marginTop: "10px" }}>
               <FaTrashAlt style={{ marginRight: "5px" }} /> Excluir

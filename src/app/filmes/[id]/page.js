@@ -4,6 +4,7 @@ import Pagina from "@/app/components/Pagina";
 import { Button } from "react-bootstrap";
 import { FaPencilAlt, FaStar, FaHeart, FaTrashAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function Page({ params }) {
   const router = useRouter();
@@ -32,30 +33,68 @@ export default function Page({ params }) {
     ? "filmes"
     : "jogos";
 
-    function excluirFavoritos() {
-      // Remove o item dos favoritos, se presente
-      const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
-      const favoritosAtualizados = favoritos.filter(
-        (item) => !(item.id === params.id && item.categoria === categoria)
+  // Estado para verificar se o item está nos favoritos
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  useEffect(() => {
+    // Verifica se o item já está nos favoritos ao carregar a página
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    const itemFavorito = favoritos.some(
+      (item) => item.id === dados.id && item.categoria === categoria
+    );
+    setIsFavorited(itemFavorito);
+  }, [dados, categoria]);
+
+  // Função para adicionar o item aos favoritos no Local Storage
+  const addToFavorites = () => {
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+
+    // Verifica se o item já está nos favoritos para evitar duplicação
+    if (
+      !favoritos.some(
+        (item) => item.id === dados.id && item.categoria === categoria
+      )
+    ) {
+      const novoFavorito = {
+        ...dados,
+        categoria,
+        id: dados.id,
+        link: `${categoria}`,
+      };
+      favoritos.push(novoFavorito);
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+      setIsFavorited(true); // Atualiza o estado para refletir a mudança
+      alert("Adicionado aos favoritos!");
+    } else {
+      alert("Este item já está nos favoritos.");
+    }
+  };
+
+  // Função para remover o item dos favoritos
+  const removeFromFavorites = () => {
+    let favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    favoritos = favoritos.filter(
+      (item) => item.id !== dados.id || item.categoria !== categoria
+    );
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+    setIsFavorited(false); // Atualiza o estado para refletir a mudança
+    alert("Removido dos favoritos!");
+  };
+
+  function excluir() {
+    if (confirm("Deseja realmente excluir o registro?")) {
+      const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
+        (item) => item.id != params.id
       );
-      localStorage.setItem("favoritos", JSON.stringify(favoritosAtualizados));
+
+      localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
+
+      removeFromFavorites();
+
+      alert("Registro excluído com sucesso!");
+      router.back();
     }
-  
-    function excluir() {
-      if (confirm("Deseja realmente excluir o registro?")) {
-        // Remove o item do localStorage da categoria específica
-        const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
-          (item) => item.id != params.id
-        );
-        localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
-  
-        // Chama a função para excluir o item dos favoritos
-        excluirFavoritos();
-  
-        alert("Registro excluído com sucesso!");
-        router.back(); // Redireciona para a página anterior ou inicial
-      }
-    }
+  }
 
   const buttonStyle = {
     position: "fixed",
@@ -74,31 +113,6 @@ export default function Page({ params }) {
     border: "none",
   };
 
-  // Função para adicionar o item aos favoritos no Local Storage
-  const addToFavorites = () => {
-    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
-
-    // Verifica se o item já está nos favoritos para evitar duplicação
-    if (
-      !favoritos.some(
-        (item) => item.id === dados.id && item.categoria === categoria
-      )
-    ) {
-      const novoFavorito = {
-        ...dados,
-        categoria,
-        link: `${categoria}`,
-      };
-      favoritos.push(novoFavorito);
-      localStorage.setItem("favoritos", JSON.stringify(favoritos));
-      alert("Adicionado aos favoritos!");
-    } else {
-      alert("Este item já está nos favoritos.");
-    }
-  };
-
-  console.log(categoria);
-
   return (
     <Pagina>
       <Button
@@ -109,8 +123,10 @@ export default function Page({ params }) {
         onMouseLeave={(e) =>
           (e.target.style.backgroundColor = buttonStyle.backgroundColor)
         }
-      ><a href="{`edit/${item.id}`}">
-        <FaPencilAlt /></a>
+      >
+        <a  href={`/${categoria}/${dados.id}/edit`}>
+          <FaPencilAlt />
+        </a>
       </Button>
 
       <div style={styles.container}>
@@ -131,14 +147,25 @@ export default function Page({ params }) {
                 />
               ))}
             </div>
-            {/* Botão de adicionar aos favoritos */}
-            <Button
-              onClick={addToFavorites}
-              variant="danger"
-              style={{ marginTop: "10px" }}
-            >
-              <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
-            </Button>
+
+            {/* Renderiza o botão correto baseado no estado de favoritos */}
+            {!isFavorited ? (
+              <Button
+                onClick={addToFavorites}
+                variant="danger"
+                style={{ marginTop: "10px" }}
+              >
+                <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
+              </Button>
+            ) : (
+              <Button
+                onClick={removeFromFavorites}
+                variant="danger"
+                style={{ marginTop: "10px" }}
+              >
+                <FaHeart style={{ marginRight: "5px" }} /> Remover dos Favoritos
+              </Button>
+            )}
 
             <Button onClick={excluir} variant="secondary" style={{ marginTop: "10px" }}>
               <FaTrashAlt style={{ marginRight: "5px" }} /> Excluir

@@ -90,7 +90,7 @@ export default function Page() {
       </Button>
 
       <div>
-        <h1 style={sectionHeaderStyle}>Mais Recentes</h1>
+        <h1 style={sectionHeaderStyle}>Filmes</h1>
         <Row md={1}>
           <Col>
             <div

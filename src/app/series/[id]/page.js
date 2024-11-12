@@ -1,7 +1,7 @@
 "use client";
 
 import Pagina from "@/app/components/Pagina";
-import { Button, Accordion } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { FaPencilAlt, FaStar, FaHeart, FaChevronDown, FaTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Importa useRouter
@@ -34,8 +34,18 @@ export default function Page({ params }) {
       : "jogos";
 
   const [episodiosVisiveis, setEpisodiosVisiveis] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const toggleEpisodios = () => setEpisodiosVisiveis(!episodiosVisiveis);
+
+  useEffect(() => {
+    // Verifica se o item já está nos favoritos ao carregar a página
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    const itemFavorito = favoritos.some(
+      (item) => item.id === dados.id && item.categoria === categoria
+    );
+    setIsFavorited(itemFavorito);
+  }, [dados, categoria]);
 
   const buttonStyle = {
     position: "fixed",
@@ -65,41 +75,57 @@ export default function Page({ params }) {
       const novoFavorito = { ...dados, categoria, link: `/${categoria}/${dados.id}` };
       favoritos.push(novoFavorito);
       localStorage.setItem("favoritos", JSON.stringify(favoritos));
+      setIsFavorited(true); // Atualiza o estado para refletir a mudança
       alert("Adicionado aos favoritos!");
     } else {
       alert("Este item já está nos favoritos.");
     }
   };
 
-  function excluirFavoritos() {
-    // Remove o item dos favoritos, se presente
+  const removeFromFavorites = () => {
     const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
     const favoritosAtualizados = favoritos.filter(
-      (item) => !(item.id === params.id && item.categoria === categoria)
+      (item) => item.id !== dados.id || item.categoria !== categoria
     );
     localStorage.setItem("favoritos", JSON.stringify(favoritosAtualizados));
-  }
+    setIsFavorited(false); // Atualiza o estado para refletir a mudança
+    alert("Removido dos favoritos!");
+  };
 
   function excluir() {
     if (confirm("Deseja realmente excluir o registro?")) {
-      // Remove o item do localStorage da categoria específica
       const dadosAtualizados = JSON.parse(localStorage.getItem(categoria) || "[]").filter(
         (item) => item.id != params.id
       );
       localStorage.setItem(categoria, JSON.stringify(dadosAtualizados));
 
-      // Chama a função para excluir o item dos favoritos
-      excluirFavoritos();
+      removeFromFavorites();
 
       alert("Registro excluído com sucesso!");
-      router.back(); // Redireciona para a página anterior ou inicial
+      router.back();
     }
   }
+
+  // Função para excluir um episódio específico
+  const excluirEpisodio = (episodioId) => {
+    if (confirm("Deseja realmente excluir este episódio?")) {
+      const dadosAtualizados = dados.episodios.filter((episodio) => episodio.id !== episodioId);
+      const dadosComEpisodiosAtualizados = { ...dados, episodios: dadosAtualizados };
+
+      // Atualiza a categoria no localStorage com o episódio excluído
+      const categoriaAtualizada = JSON.parse(localStorage.getItem(categoria) || "[]").map((item) =>
+        item.id === dados.id ? dadosComEpisodiosAtualizados : item
+      );
+      localStorage.setItem(categoria, JSON.stringify(categoriaAtualizada));
+
+      alert("Episódio excluído com sucesso!");
+    }
+  };
 
   return (
     <Pagina>
       <Button
-        href={`/${categoria}/${dados.id}/edit`} 
+        href={`/${categoria}/${dados.id}/episodio`}
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.target.style.backgroundColor = hoverStyle.backgroundColor)
@@ -129,9 +155,17 @@ export default function Page({ params }) {
                 />
               ))}
             </div>
-            <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
-              <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
-            </Button>
+
+            {/* Botão de Adicionar ou Remover dos Favoritos */}
+            {!isFavorited ? (
+              <Button onClick={addToFavorites} variant="danger" style={{ marginTop: "10px" }}>
+                <FaHeart style={{ marginRight: "5px" }} /> Adicionar aos Favoritos
+              </Button>
+            ) : (
+              <Button onClick={removeFromFavorites} variant="danger" style={{ marginTop: "10px" }}>
+                <FaHeart style={{ marginRight: "5px" }} /> Remover dos Favoritos
+              </Button>
+            )}
 
             <Button onClick={excluir} variant="secondary" style={{ marginTop: "10px" }}>
               <FaTrashAlt style={{ marginRight: "5px" }} /> Excluir
@@ -145,8 +179,8 @@ export default function Page({ params }) {
                 </Button>
                 {episodiosVisiveis && (
                   <div style={styles.episodeList}>
-                    {dados.episodios.map((episodio, index) => (
-                      <div key={index} style={styles.episodeItem}>
+                    {dados.episodios.map((episodio) => (
+                      <div key={episodio.id} style={styles.episodeItem}>
                         <img src={episodio.capa} alt={`Capa do Episódio ${episodio.numero}`} style={styles.episodeImage} />
                         <div style={styles.episodeContent}>
                           <h4 style={styles.episodeTitle}>Episódio {episodio.numero}: {episodio.nome}</h4>
@@ -161,6 +195,15 @@ export default function Page({ params }) {
                               />
                             ))}
                           </div>
+                          {/* Botão de excluir episódio */}
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => excluirEpisodio(episodio.id)}
+                            style={{ marginTop: "10px" }}
+                          >
+                            <FaTrashAlt style={{ marginRight: "5px" }} /> Excluir
+                          </Button>
                         </div>
                       </div>
                     ))}
